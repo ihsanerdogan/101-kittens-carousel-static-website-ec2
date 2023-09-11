@@ -1,0 +1,48 @@
+# AWSTemplateFormatVersion:
+Description: |
+  This template creates an EC2 with SSH
+
+Resources:
+  IhsanInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0c147c2e2b026f094
+      InstanceType: t2.micro
+      KeyName: firstkey
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          yum update -y
+          yum install -y httpd
+          systemctl start httpd
+          systemctl enable httpd
+          cd /var/www/html
+          yum install -y git
+          git clone https://github.com/ihsanerdogan/101-kittens-carousel-static-website-ec2.git static-web
+          mv static-web/* .
+          chown apache:apache *
+          systemctl enable httpd
+      SecurityGroups:
+        - !Ref WebServerSecurityGroup
+      Tags:
+        - Key: Name
+          Value: ihsanCFNinstance
+        - Key: Environment
+          Value: Dev
+  ihsaninstanceSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allows SSH and HTTP # Required
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPOrt: 80
+          CidrIP: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPOrt: 22
+          CidrIP: 0.0.0.0/0
+Outputs:
+  WebsiteURL:
+    Description: URL of the Kittens Carousel Application
+    Value: !Sub "http://${WebServerInstance.PublicDnsName}"
