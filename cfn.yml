@@ -13,13 +13,13 @@ Resources:
         - !Ref MySecGrp
       Tags:
         - Key: Name
-          Value: !Sub Ihsan ${AWS::StackName}
+          Value: !Sub ihsan ${AWS::StackName}
       UserData:
         Fn::Base64: |
           #! /bin/bash
           yum update -y
           yum install httpd -y
-          FOLDER="https://github.com/ihsanerdogan/101-kittens-carousel-static-website-ec2/tree/main/static-web"
+          FOLDER="https://raw.githubusercontent.com/ihsanerdogan/101-kittens-carousel-static-website-ec2/main/static-web"
           cd /var/www/html
           wget ${FOLDER}/index.html
           wget ${FOLDER}/cat0.jpg
@@ -36,7 +36,7 @@ Resources:
       GroupName: ihsansecportfolio
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 80
+          FromPort: 22
           ToPort: 80
           CidrIp: 0.0.0.0/0
       Tags:
@@ -45,7 +45,7 @@ Resources:
 
 Outputs:
   WebSiteURL:
-    Description: Tis output gives the URL of EC2
+    Description: This output gives the URL of EC2
     Value: !Sub
       - http://${PublicAddress}
       - PublicAddress: !GetAtt MyWebServer.PublicDnsName
